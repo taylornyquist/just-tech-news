@@ -124,13 +124,25 @@ router.put('/upvote', (req, res) => {
 
     // NEW WAY (just one line, links to Post.js extends section)
     // custom static method created in models/Post.js
-    Post.upvote(req.body, { Vote })
+    // Post.upvote(req.body, { Vote })
 
-        .then(dbPostData => res.json(dbPostData))
-        .catch(err => {
-            console.log(err);
-            res.status(400).json(err);
-        });
+    //     .then(dbPostData => res.json(dbPostData))
+    //     .catch(err => {
+    //         console.log(err);
+    //         res.status(400).json(err);
+    //     });
+
+    // NEW NEW WAY in week 14...
+    // make sure the session exists first
+    if (req.session) {
+        // pass session id along with all destructured properties on req.body
+        Post.upvote({ ...req.body, user_id: req.session.user_id }, { Vote, Comment, User })
+            .then(updatedVoteData => res.json(updatedVoteData))
+            .catch(err => {
+                console.log(err);
+                res.status(500).json(err);
+            });
+    }
 });
 
 // PUT route to update a post's title
